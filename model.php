@@ -4,22 +4,27 @@
 
 class Db
 {
-    // private $dbSetup;
+    private $dbsetup;
     private $conn;
     private $sql;
 
-    // public function __construct($param)
-    // {
-    //     $this->dbSetup = $param;
-    // }
-
-    public function db($dbsetup)
+    public function __construct($dbsetup)
     {
+        $this->dbsetup = $dbsetup;
+        // $this->conn = false;
+    }
+
+    public function db()
+    {
+        $dbsetup = $this->dbsetup;
+        if ($this->conn) return $this;
         try {
             // $this->conn = new PDO("mysql:host=localhost;dbname=senggol", "root", "");
+            // $db = new PDO("mysql:host=localhost;dbname=senggol", "root", "");
+            //die(print_r($dbsetup));
             $this->conn = new PDO("mysql:host=" . $dbsetup['host'] . ";dbname=" . $dbsetup['name'] . "", $dbsetup['user'], $dbsetup['pass']);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            echo "Connection successful" . PHP_EOL . "";
+            // echo "Connection successful" . PHP_EOL . "";
             // echo "Data Pendaftaran Pasar Senggol: " . PHP_EOL . "";
             // $sql = "SELECT * FROM pendaftar";
             // $pendaftar = $this->conn->query($sql);
@@ -32,6 +37,7 @@ class Db
             //     echo "Alamat: " . $daftar["alamat"] . "" . PHP_EOL . "";
             //     echo "Surel: " . $daftar["surel"] . "";
             // }
+            return $this;
         } catch (PDOException $e) {
             die("Connection failed : " . $e->getMessage());
         }
@@ -39,21 +45,36 @@ class Db
 
     public function beginTransaction()
     {
-        $this->conn->beginTransaction();
+        return $this->conn->beginTransaction();
     }
 
-    public function countRegisteration($data)
+    public function countRegistration($data)
     {
-        $id = $data['idpendaftar'];
-        $sql = $this->conn->prepare("SELECT COUNT(*) FROM pendaftar WHERE idpendaftar=?");
-        $sql->bindValue(1, $id);
+        $sql = "SELECT COUNT(*) c FROM pendaftar WHERE nik=?";
+        // var_dump($this->conn);
+        $this->sql = $this->conn->prepare($sql);
+        $this->sql->bindValue(1, $data['nik'] ?? 0);
+        return $this;
+    }
 
-        $this->sql = $sql;
+    public function addRegistration($data)
+    {
+        $sql = "INSERT INTO pendaftar(tahun, bulan, nik, nama, alamat, surel) VALUES(?, ?, ?, ?, ?, ?)";
+        $sql = $this->conn->prepare($sql);
+        $sql->bindValue(1, @$data['tahun']);
+        $sql->bindValue(2, @$data['bulan']);
+        $sql->bindValue(3, @$data['nik']);
+        $sql->bindValue(4, @$data['nama']);
+        $sql->bindValue(5, @$data['alamat']);
+        $sql->bindValue(6, @$data['surel']);
+        $sql->execute();
+        return true;
     }
 
     public function st()
     {
         $this->sql->execute();
+        return $this;
     }
 
     public function fetchColumn()
@@ -61,26 +82,18 @@ class Db
         return $this->sql->fetchColumn();
     }
 
-    public function addRegistration($data)
-    {
-        $sql = "INSERT INTO pendaftar(nik, nama, alamat, surel) VALUES(:nik, :nama, :alamat, :surel)";
-        $sql = $this->conn->prepare($data);
-        $sql->execute($sql);
-        return true;
-    }
-
     public function lastInsertId()
     {
-        return $this->sql->lastInsertId();
+        return $this->conn->lastInsertId();
+    }
+
+    public function commit()
+    {
+        return $this->conn->commit();
     }
 
     public function rollBack()
     {
         return $this->sql->rollBack();
-    }
-
-    public function commit()
-    {
-        return $this->sql->commit();
     }
 }

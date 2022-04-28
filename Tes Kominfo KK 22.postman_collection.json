@@ -1,0 +1,54 @@
+{
+	"info": {
+		"_postman_id": "38a60bd4-680f-4688-a24f-5a653f084c31",
+		"name": "Tes Kominfo KK 22",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Daftar",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "nik",
+							"value": "7110021309990002",
+							"type": "text"
+						},
+						{
+							"key": "nama",
+							"value": "Moh. Setiawan Modeong",
+							"type": "text"
+						},
+						{
+							"key": "alamat",
+							"value": "Buyat 2, Boltim",
+							"type": "text"
+						},
+						{
+							"key": "surel",
+							"value": "setiawan.modeong99@gmail.com",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost/teskominfokk22/index.php/daftar",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"teskominfokk22",
+						"index.php",
+						"daftar"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
